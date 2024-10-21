@@ -242,19 +242,19 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             } else {
                 writer = new BufferedWriter(new FileWriter("src\\export.txt"));
             }
-            String zusammenfassung = "{";
+            StringBuilder zusammenfassung = new StringBuilder("{");
             for (Node node : nodes) {
-                zusammenfassung = zusammenfassung + node.getValue() + ",";
+                zusammenfassung.append(node.getValue()).append(",");
             }
-            zusammenfassung = zusammenfassung.substring(0, zusammenfassung.length() - 1) + "}";
-            writer.write(zusammenfassung);
+            zusammenfassung = new StringBuilder(zusammenfassung.substring(0, zusammenfassung.length() - 1) + "}");
+            writer.write(zusammenfassung.toString());
             writer.newLine();
-            zusammenfassung = "{";
+            zusammenfassung = new StringBuilder("{");
             for (Edge edge : edges) {
-                zusammenfassung = zusammenfassung + "{" + edge.getNode1().getValue() + "," + edge.getNode2().getValue() + "},";
+                zusammenfassung.append("{").append(edge.getNode1().getValue()).append(",").append(edge.getNode2().getValue()).append("},");
             }
-            zusammenfassung = zusammenfassung.substring(0, zusammenfassung.length() - 1) + "}";
-            writer.write(zusammenfassung);
+            zusammenfassung = new StringBuilder(zusammenfassung.substring(0, zusammenfassung.length() - 1) + "}");
+            writer.write(zusammenfassung.toString());
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -310,7 +310,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             edges.clear();
             anzahlNodes = -1;
             while ((line = reader.readLine()) != null) {
-                if (line.substring(1,2).equals("{")){
+                if (line.charAt(1) == '{'){
                     //Edge
                     line = line.substring(1, line.length() -1 );
                     line = line.replaceAll("\\s+", "");
@@ -319,7 +319,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                         String edge = line.substring(line.indexOf("{") + 1, line.indexOf("}"));
                         newEdges.add(edge);
                         line = line.substring(1);
-                        if (line.indexOf("{") != -1){
+                        if (line.contains("{")){
                             line = line.substring(line.indexOf("{"));
                         } else {
                             line = line.substring(0, line.length() - 1);
@@ -344,7 +344,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                         }
                     }
                     repaint();
-                } else if (line.substring(0,1).equals("{")) {
+                } else if (line.charAt(0) == '{') {
                     //Node
                     line = line.substring(1, line.length() -1 );
                     line = line.replaceAll("\\s+", "");
@@ -521,8 +521,8 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         to.removeAllItems();
         from.removeAllItems();
         for (Node node : nodes){
-            to.addItem(new ComboItem("Node: " + node.getValue(), node.getValue() + ""));
-            from.addItem(new ComboItem("Node: " + node.getValue(), node.getValue() + ""));
+            to.addItem(new ComboItem("Node: " + node.getValue(), String.valueOf(node.getValue())));
+            from.addItem(new ComboItem("Node: " + node.getValue(), String.valueOf(node.getValue())));
         }
     }
 }
