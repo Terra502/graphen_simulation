@@ -236,7 +236,12 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
 
     public void exportData() {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("src\\export.txt"));
+            BufferedWriter writer;// = new BufferedWriter(new FileWriter("export.txt"));
+            if(System.getProperty("os.name").equals("Linux")){
+              writer = new BufferedWriter(new FileWriter("export.txt"));
+            } else {
+              writer = new BufferedWriter(new FileWriter("src\\export.txt"));
+            }
             String zusammenfassung = "{";
             for (Node node : nodes) {
                 zusammenfassung = zusammenfassung + node.getValue() + ",";
@@ -291,7 +296,12 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
 
     public void importData(){
         try {
-            BufferedReader reader = new BufferedReader(new FileReader("src\\import.txt"));
+            BufferedReader reader;
+            if (System.getProperty("os.name").equals("Linux")){
+              reader = new BufferedReader(new FileReader("import.txt"));
+            } else {
+              reader = new BufferedReader(new FileReader("str\\import.txt"));
+            }
             String line;
             int lineNumber = 0;
             int x = 10;
