@@ -239,8 +239,10 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             BufferedWriter writer;// = new BufferedWriter(new FileWriter("export.txt"));
             if(System.getProperty("os.name").equals("Linux")){
               writer = new BufferedWriter(new FileWriter("export.txt"));
-            } else {
+            } else if (System.getProperty("user.dir").endsWith("src")){
               writer = new BufferedWriter(new FileWriter("export.txt"));
+            } else {
+                writer = new BufferedWriter(new FileWriter("src\\export.txt"));
             }
             String zusammenfassung = "{";
             for (Node node : nodes) {
@@ -299,8 +301,10 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             BufferedReader reader;
             if (System.getProperty("os.name").equals("Linux")){
               reader = new BufferedReader(new FileReader("import.txt"));
+            } else if (System.getProperty("user.dir").endsWith("src")){
+                reader = new BufferedReader(new FileReader("import.txt"));
             } else {
-              reader = new BufferedReader(new FileReader("import.txt"));
+                reader = new BufferedReader(new FileReader("src\\import.txt"));
             }
             String line;
             int lineNumber = 0;
@@ -378,7 +382,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
     }
 
     public static void main(String[] args) {
-        Main frame = new Main();
+        new Main();
     }
 
     @Override
@@ -438,7 +442,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             importData();
         }
         if (actionCommand.equals("edgeEdit")){
-            EdgeEditor editor = new EdgeEditor(nodes, edges, this);
+            new EdgeEditor(nodes, edges, this);
         }
         if (actionCommand.equals("sortieren")){
             positionNodes();
