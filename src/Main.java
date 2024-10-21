@@ -240,7 +240,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             if(System.getProperty("os.name").equals("Linux")){
               writer = new BufferedWriter(new FileWriter("export.txt"));
             } else {
-              writer = new BufferedWriter(new FileWriter("src\\export.txt"));
+              writer = new BufferedWriter(new FileWriter("export.txt"));
             }
             String zusammenfassung = "{";
             for (Node node : nodes) {
@@ -300,7 +300,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             if (System.getProperty("os.name").equals("Linux")){
               reader = new BufferedReader(new FileReader("import.txt"));
             } else {
-              reader = new BufferedReader(new FileReader("str\\import.txt"));
+              reader = new BufferedReader(new FileReader("import.txt"));
             }
             String line;
             int lineNumber = 0;
