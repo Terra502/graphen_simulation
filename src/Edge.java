@@ -38,6 +38,12 @@ public class Edge {
         g.drawLine(node1.getX(), node1.getY(), node2.getX(), node2.getY());
     }
 
+    public void drawCost(Graphics g){
+      int x = (node1.getX() + node2.getX()) / 2;
+      int y = (node1.getY() + node2.getY()) / 2;
+      g.drawString(String.valueOf(cost), x, y);       
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

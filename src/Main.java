@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -12,13 +14,17 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
     private ArrayList<Edge> edges = new ArrayList<>();
     private final int MAX_NODES = 25;
     private int anzahlNodes = -1;
+    private boolean doDrawCost = false;
+
 
     JLabel xPos;
     JLabel yPos;
     JLabel grad;
     JLabel distanz;
+    JLabel durchmesser;
     JComboBox<ComboItem> from;
     JComboBox<ComboItem> to;
+    JCheckBox drawCost;
 
     public Main(){
         setTitle("Graphen Menü");
@@ -42,6 +48,11 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                 }
                 for (Node node: nodes) {
                     node.drawNode(g);
+                }
+                if (doDrawCost){
+                  for (Edge edge : edges) {
+                    edge.drawCost(g);
+                  }
                 }
             }
         };
@@ -95,6 +106,21 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             }
         });
 
+        drawCost = new JCheckBox("Draw Cost");
+        drawCost.setBackground(Color.LIGHT_GRAY);
+
+        drawCost.addChangeListener(new ChangeListener(){
+          public void stateChanged(ChangeEvent changeEvent){
+            if (drawCost.isSelected()) {
+              doDrawCost = true;
+              repaint();
+            } else {
+              doDrawCost = false;
+              repaint();
+            }
+          }
+        });
+
 
         add(panel1);
 
@@ -114,6 +140,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
 
         grad = new JLabel("<html><h2 style=\"text-align:center; border: solid\">Grad:</h2></html>");
         distanz = new JLabel("<html><h2 style=\"text-align:center; border: solid\">Distanz:</h2></html>");
+        durchmesser = new JLabel("<html><h2 style=\"text-align:center; border: solid\">Durchm.:</h2></html>");
 
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.BOTH;
@@ -159,14 +186,13 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         gbc.gridy = 1;
         gbc.gridx = 0;
         panel2.add(grad, gbc);
+        gbc.gridx = 1;
+        panel2.add(drawCost, gbc);
         gbc.gridy = 2;
         gbc.gridx = 0;
-
         panel2.add(addEdgeButton, gbc);
         gbc.gridx = 1;
-
         panel2.add(importButton, gbc);
-
         gbc.gridy = 3;
         gbc.gridx = 0;
         panel2.add(resetButton, gbc);
@@ -185,6 +211,8 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         gbc.gridy = 6;
         gbc.gridx = 0;
         panel2.add(distanz, gbc);
+        gbc.gridy = 7;
+        panel2.add(durchmesser, gbc);
 
         setLayout(new BorderLayout());
         add(panel1, BorderLayout.CENTER);  // Panel 1 nimmt den linken Bereich ein
@@ -375,6 +403,12 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         int x = (dimension.width - fenster.getWidth()) / 2;
         int y = (dimension.height - fenster.getHeight()) / 2;
         fenster.setLocation(x, y);
+    }
+
+    public void setDurchmesser(){
+      for (Node node : nodes) {
+        
+      }
     }
 
     public static void main(String[] args) {
