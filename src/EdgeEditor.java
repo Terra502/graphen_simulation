@@ -9,6 +9,7 @@ public class EdgeEditor extends JFrame implements ActionListener {
     private ArrayList<Node> nodes;
     private ArrayList<Edge> edges;
     private ArrayList<JCheckBox> cbArray;
+    private ArrayList<JTextField> tfArray;
     private JComboBox<ComboItem> nodeChooser;
 
     public EdgeEditor(ArrayList<Node> nodes, ArrayList<Edge> edges, EdgeEditorListener listener) {
@@ -35,7 +36,7 @@ public class EdgeEditor extends JFrame implements ActionListener {
         // ComboBox
         nodeChooser = new JComboBox<>();
         for (Node node : nodes) {
-            nodeChooser.addItem(new ComboItem("Node: " + node.getValue(), node.getValue() + ""));
+            nodeChooser.addItem(new ComboItem("Node: " + node.getValue(), String.valueOf(node.getValue())));
         }
         panel1.add(nodeChooser, gbc);
 
@@ -48,11 +49,38 @@ public class EdgeEditor extends JFrame implements ActionListener {
         gbc2.gridy = 0;
         gbc2.anchor = GridBagConstraints.WEST;  // Setzt die Checkboxen linksbündig
         cbArray = new ArrayList<>();
+        tfArray = new ArrayList<>();
 
         for (Node node : nodes) {
             JCheckBox cb = new JCheckBox(String.valueOf(node.getValue()));
+
+            JTextField tf = new JTextField();
+            tf.setText("Cost");
+            tf.setForeground(Color.GRAY);
+            tf.setFont(new Font("Serif",Font.BOLD,12));
+            tf.addFocusListener(new FocusListener() {
+                @Override
+                public void focusGained(FocusEvent e) {
+                    if (tf.getText().equals("Cost")) {
+                        tf.setText("");
+                        tf.setForeground(Color.BLACK);
+                    }
+                }
+                @Override
+                public void focusLost(FocusEvent e) {
+                    if (tf.getText().isEmpty()) {
+                        tf.setForeground(Color.GRAY);
+                        tf.setText("Cost");
+                    }
+                }
+            });
+            tfArray.add(tf);
+
             cbArray.add(cb);
             panel2.add(cb, gbc2);
+            gbc2.gridx = 1;
+            panel2.add(tf, gbc2);
+            gbc2.gridx = 0;
             gbc2.gridy++;  // Erhöhe nur die Zeile, damit die Checkboxen untereinander angeordnet werden
         }
 
@@ -60,22 +88,17 @@ public class EdgeEditor extends JFrame implements ActionListener {
         saveEdges.addActionListener(this);
         saveEdges.setActionCommand("save");
         panel2.add(saveEdges, gbc2);
-
         panel1.add(panel2, gbc);
 
         // ItemListener für ComboBox, um die Checkboxen zu aktualisieren
-        nodeChooser.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    updateCheckboxes();
-                }
+        nodeChooser.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                updateCheckboxes();
             }
         });
 
         // Checkboxen initial aktualisieren, basierend auf dem ersten ausgewählten Knoten
         updateCheckboxes();
-
         add(panel1);
     }
 
@@ -92,16 +115,9 @@ public class EdgeEditor extends JFrame implements ActionListener {
 
         // Alle Edges durchlaufen und prüfen, ob sie mit dem ausgewählten Node verbunden sind
         for (Edge edge : edges) {
-            if (String.valueOf(edge.getNode1().getValue()).equals(selectedNodeValue)) {
+            if (String.valueOf(edge.getStartNode().getValue()).equals(selectedNodeValue)) {
                 for (JCheckBox jcb : cbArray) {
-                    if (jcb.getText().equals(String.valueOf(edge.getNode2().getValue()))) {
-                        jcb.setSelected(true);
-                    }
-                }
-            }
-            if (String.valueOf(edge.getNode2().getValue()).equals(selectedNodeValue)) {
-                for (JCheckBox jcb : cbArray) {
-                    if (jcb.getText().equals(String.valueOf(edge.getNode1().getValue()))) {
+                    if (jcb.getText().equals(String.valueOf(edge.getEndNode().getValue()))) {
                         jcb.setSelected(true);
                     }
                 }
@@ -119,40 +135,61 @@ public class EdgeEditor extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String actionCommand = e.getActionCommand();
-        if (actionCommand.equals("save")){
-            // Hole den ausgewählten Knoten aus der ComboBox
+        if (actionCommand.equals("save")) {
             Node selectedNode = getNodeFromComboBox();
             if (selectedNode != null) {
-                // Neue Liste für die hinzugefügten Kanten
                 ArrayList<Edge> newEdges = new ArrayList<>();
 
-                // Durchlaufe die Checkboxen, um die neuen Verbindungen zu prüfen
-                for (JCheckBox cb : cbArray) {
+                for (int i = 0; i < cbArray.size(); i++) {
+                    JCheckBox cb = cbArray.get(i);
+                    JTextField tf = tfArray.get(i);  // Das zugehörige Textfeld abrufen
+
                     Node targetNode = getNodeFromCheckbox(cb.getText());
                     if (targetNode != null) {
                         if (cb.isSelected()) {
-                            // Prüfe, ob die Kante bereits existiert
                             if (!edgeExists(selectedNode, targetNode)) {
-                                // Füge nur hinzu, wenn die Kante nicht bereits existiert
-                                newEdges.add(new Edge(selectedNode, targetNode, 1));
+                                try {
+                                    int cost;
+                                    if (tf.getText().equals("Cost")){
+                                        cost = 1;
+                                    } else {
+                                        cost = Integer.parseInt(tf.getText());  // Textfeldwert als Kosten verwenden
+                                    }
+                                    newEdges.add(new Edge(selectedNode, targetNode, cost));
+                                } catch (NumberFormatException ex) {
+                                    System.out.println("Ungültiger Kostenwert für Kante: " + ex.getMessage());
+                                }
+                            } else {
+                                try {
+                                    int cost;
+                                    if (tf.getText().equals("Cost")){
+                                        cost = 1;
+                                    } else {
+                                        cost = Integer.parseInt(tf.getText());  // Textfeldwert als Kosten verwenden
+                                    }
+                                    removeEdgeIfExists(selectedNode, targetNode);
+                                    newEdges.add(new Edge(selectedNode, targetNode, cost));
+                                } catch (NumberFormatException ex) {
+                                    System.out.println("Ungültiger Kostenwert für Kante: " + ex.getMessage());
+                                }
                             }
                         } else {
-                            // Falls nicht ausgewählt, entferne die Kante (falls vorhanden)
                             removeEdgeIfExists(selectedNode, targetNode);
                         }
                     }
                 }
 
-                // Füge die neuen Kanten der bestehenden Liste hinzu
                 edges.addAll(newEdges);
                 listener.onEdgesUpdated(nodes, edges);
             }
         }
     }
 
+
     private Node getNodeFromComboBox() {
         ComboItem selectedItem = (ComboItem) nodeChooser.getSelectedItem();
         for (Node node : nodes) {
+            assert selectedItem != null;
             if (String.valueOf(node.getValue()).equals(selectedItem.getValue())) {
                 return node;
             }
@@ -172,8 +209,8 @@ public class EdgeEditor extends JFrame implements ActionListener {
     // Hilfsmethode, um zu prüfen, ob eine Kante bereits existiert
     private boolean edgeExists(Node node1, Node node2) {
         for (Edge edge : edges) {
-            if ((edge.getNode1().equals(node1) && edge.getNode2().equals(node2)) ||
-                    (edge.getNode1().equals(node2) && edge.getNode2().equals(node1))) {
+            if ((edge.getStartNode().equals(node1) && edge.getEndNode().equals(node2)) ||
+                    (edge.getStartNode().equals(node2) && edge.getEndNode().equals(node1))) {
                 return true;
             }
         }
@@ -183,8 +220,6 @@ public class EdgeEditor extends JFrame implements ActionListener {
     // Hilfsmethode, um eine Kante zu entfernen, falls sie existiert
     private void removeEdgeIfExists(Node node1, Node node2) {
         edges.removeIf(edge ->
-                (edge.getNode1().equals(node1) && edge.getNode2().equals(node2)) ||
-                        (edge.getNode1().equals(node2) && edge.getNode2().equals(node1))
-        );
+                (edge.getStartNode().equals(node1) && edge.getEndNode().equals(node2))); // || (edge.getStartNode().equals(node2) && edge.getEndNode().equals(node1)
     }
 }

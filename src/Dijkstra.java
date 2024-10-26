@@ -25,8 +25,7 @@ public class Dijkstra {
         }
         // Füge alle Kanten der Adjazenzliste hinzu
         for (Edge edge : edges) {
-            adjList.get(edge.getNode1()).add(edge);
-            adjList.get(edge.getNode2()).add(edge);
+            adjList.get(edge.getStartNode()).add(edge);
         }
         // Setze den Startknoten
         dist.put(startNode, 0);  // Startknoten hat Distanz 0
@@ -51,7 +50,7 @@ public class Dijkstra {
         int newDistance;
         // Für jeden Nachbarn von currentNode
         for (Edge edge : adjList.get(currentNode)) {
-            Node neighbor = edge.getNode1() == currentNode ? edge.getNode2() : edge.getNode1();
+            Node neighbor = edge.getEndNode();
             if (!settled.contains(neighbor)) {
                 // Verwende die Kantenkosten aus der Edge-Klasse
                 edgeDistance = edge.getCost();
@@ -72,8 +71,8 @@ public class Dijkstra {
             Node prevNode = predecessor.get(currentNode);
             // Finde die Kante zwischen currentNode und prevNode
             for (Edge edge : adjList.get(prevNode)) {
-                if ((edge.getNode1() == prevNode && edge.getNode2() == currentNode) ||
-                        (edge.getNode1() == currentNode && edge.getNode2() == prevNode)) {
+                if ((edge.getStartNode() == prevNode && edge.getEndNode() == currentNode) ||
+                        (edge.getStartNode() == currentNode && edge.getEndNode() == prevNode)) {
                     edge.setColor(Color.RED);  // Setzt die Kantenfarbe auf Rot
                     break;
                 }

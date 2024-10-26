@@ -218,6 +218,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         add(panel1, BorderLayout.CENTER);  // Panel 1 nimmt den linken Bereich ein
         add(panel2, BorderLayout.EAST);
 
+        setDurchmesser();
         setVisible(true);
     }
 
@@ -279,7 +280,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             writer.newLine();
             zusammenfassung = new StringBuilder("{");
             for (Edge edge : edges) {
-                zusammenfassung.append("{").append(edge.getNode1().getValue()).append(",").append(edge.getNode2().getValue()).append("},");
+                zusammenfassung.append("{").append(edge.getStartNode().getValue()).append(",").append(edge.getEndNode().getValue()).append("},");
             }
             zusammenfassung = new StringBuilder(zusammenfassung.substring(0, zusammenfassung.length() - 1) + "}");
             writer.write(zusammenfassung.toString());
@@ -298,7 +299,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
     public int calcDegree(Node node) {
         int degree = 0;
         for (Edge edge : edges) {
-            if (edge.getNode1() == node || edge.getNode2() == node) {
+            if (edge.getStartNode() == node || edge.getEndNode() == node) {
                 degree++;
             }
         }
@@ -338,10 +339,11 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             edges.clear();
             anzahlNodes = -1;
             while ((line = reader.readLine()) != null) {
+                line = line.replaceAll("\\s+", "").replace(";", ",");
+                line = line.replace("(", "{").replace(")", "}");
                 if (line.charAt(1) == '{'){
                     //Edge
-                    line = line.substring(1, line.length() -1 );
-                    line = line.replaceAll("\\s+", "");
+                    line = line.substring(1, line.length() - 1); // Entfernt das erste und letzte Zeichen
                     ArrayList<String> newEdges = new ArrayList<>();
                     while (line.contains("{")){
                         String edge = line.substring(line.indexOf("{") + 1, line.indexOf("}"));
@@ -350,18 +352,17 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                         if (line.contains("{")){
                             line = line.substring(line.indexOf("{"));
                         } else {
-                            line = line.substring(0, line.length() - 1);
-                            newEdges.add(line);
                             line = "";
                         }
                     }
-                    for (String ausgabe : newEdges) {
+                    for (String edge : newEdges) {
                         Node node1 = null;
                         Node node2 = null;
                         for (Node node : nodes) {
-                            if (node.getValue() == ausgabe.charAt(0)) {
+                            if (node.getValue() == edge.charAt(0)) {
                                 node1 = node;
-                            } else if (node.getValue() == ausgabe.charAt(2)) {
+                            }
+                            if (node.getValue() == edge.charAt(2)) {
                                 node2 = node;
                             }
                         }
@@ -374,11 +375,10 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                     repaint();
                 } else if (line.charAt(0) == '{') {
                     //Node
-                    line = line.substring(1, line.length() -1 );
-                    line = line.replaceAll("\\s+", "");
+                    line = line.substring(1, line.length() - 1); // Entfernt das erste und letzte Zeichen
                     String[] newNodes = line.split(",");
-                    for (String no : newNodes){
-                        nodes.add(new Node(x,y, no.charAt(0)));
+                    for (String node : newNodes){
+                        this.nodes.add(new Node(x,y, node.charAt(0)));
                         anzahlNodes++;
                         x += 50;
                         if (x > panel1.getWidth() - 100){
@@ -406,9 +406,18 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
     }
 
     public void setDurchmesser(){
-      for (Node node : nodes) {
-        
-      }
+        int max = 0;
+        for (Node startNode : nodes) {
+            for (Node destNode : nodes) {
+                Dijkstra dijkstra = new Dijkstra(nodes, edges, startNode);
+                Map<Node, Integer> shortestPaths = dijkstra.findShortestPaths();
+                int distanceToTarget = shortestPaths.get(destNode);
+                if (distanceToTarget != 2147483647 && distanceToTarget > max){
+                    max = distanceToTarget;
+                }
+            }
+        }
+        durchmesser.setText("<html><h2 style=\"text-align:center; border: solid\">Durchm.: " + max + "</h2></html>");
     }
 
     public static void main(String[] args) {
@@ -491,6 +500,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         // Aktualisiere die Listen in der Main-Klasse
         this.nodes = updatedNodes;
         this.edges = updatedEdges;
+        setDurchmesser();
         repaint();  // Aktualisiere die Anzeige
     }
 
@@ -525,10 +535,10 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                 // Finde Nachbarn des aktuellen Knotens
                 for (Edge edge : edges) {
                     Node neighbor = null;
-                    if (edge.getNode1() == currentNode) {
-                        neighbor = edge.getNode2();
-                    } else if (edge.getNode2() == currentNode) {
-                        neighbor = edge.getNode1();
+                    if (edge.getStartNode() == currentNode) {
+                        neighbor = edge.getEndNode();
+                    } else if (edge.getEndNode() == currentNode) {
+                        neighbor = edge.getStartNode();
                     }
 
                     if (neighbor != null && !nodePositions.containsKey(neighbor)) {
