@@ -1,11 +1,16 @@
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
+/*
+TODO:
+    - Cost im EdgeEditor implementieren, damit dies bei bereits vorhandenen Kanten angezeigt wird
+    - Bei Multigraphen, Kanten leicht nach rechts krümmen (Vom Ausgangspunkt)
+    - Im EdgeEditor instant bidirekte Kanten einfügen können
+    - Wenn EdgeEditor nicht mir auf den Bildschirm passt, komplett auf den nächsten schieben
+ */
 public class Main extends JFrame implements KeyListener, MouseListener, ActionListener, EdgeEditorListener {
 
     private final JPanel panel1;
@@ -109,15 +114,13 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         drawCost = new JCheckBox("Draw Cost");
         drawCost.setBackground(Color.LIGHT_GRAY);
 
-        drawCost.addChangeListener(new ChangeListener(){
-          public void stateChanged(ChangeEvent changeEvent){
-            if (drawCost.isSelected()) {
-              doDrawCost = true;
-              repaint();
-            } else {
-              doDrawCost = false;
-              repaint();
-            }
+        drawCost.addChangeListener(changeEvent -> {
+          if (drawCost.isSelected()) {
+            doDrawCost = true;
+            repaint();
+          } else {
+            doDrawCost = false;
+            repaint();
           }
         });
 
@@ -481,7 +484,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             importData();
         }
         if (actionCommand.equals("edgeEdit")){
-            new EdgeEditor(nodes, edges, this);
+            new EdgeEditor(nodes, edges, this, getLocationOnScreen());
         }
         if (actionCommand.equals("sortieren")){
             positionNodes();
