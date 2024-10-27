@@ -25,9 +25,6 @@ public class Edge {
         return cost;
     }
 
-    public void setCost(int weight) {
-        this.cost = weight;
-    }
 
     public void setColor(Color color){
         this.color = color;
@@ -72,9 +69,16 @@ public class Edge {
 
 
     public void drawCost(Graphics g){
-      int x = (startNode.getX() + endNode.getX()) / 2;
-      int y = (startNode.getY() + endNode.getY()) / 2;
-      g.drawString(String.valueOf(cost), x, y);
+        /*
+        int x = (startNode.getX() + endNode.getX()) / 2;
+        int y = (startNode.getY() + endNode.getY()) / 2;
+         */
+        if (startNode == endNode){
+            return;
+        }
+        int x = (startNode.getX() + (startNode.getX() - endNode.getX()) / 15) - (startNode.getX() - endNode.getX()) / 2;
+        int y = (startNode.getY() + (startNode.getY() - endNode.getY()) / 15) - (startNode.getY() - endNode.getY()) / 2;
+        g.drawString(String.valueOf(cost), x, y);
     }
 
     @Override

@@ -12,13 +12,13 @@ public class EdgeEditor extends JFrame implements ActionListener {
     private ArrayList<JTextField> tfArray;
     private JComboBox<ComboItem> nodeChooser;
 
-    public EdgeEditor(ArrayList<Node> nodes, ArrayList<Edge> edges, EdgeEditorListener listener) {
+    public EdgeEditor(ArrayList<Node> nodes, ArrayList<Edge> edges, EdgeEditorListener listener, Point location) {
         setTitle("Edge Editor");
         setSize(400, 500);  // Setze die Größe des Fensters
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);  // Zentriere das Fenster auf dem Bildschirm
         setResizable(false);
-        fensterZentrieren(this);
+        fensterZentrieren(this, location);
         setVisible(true);
 
         this.nodes = nodes;
@@ -125,11 +125,11 @@ public class EdgeEditor extends JFrame implements ActionListener {
         }
     }
 
-    public void fensterZentrieren(JFrame fenster) {
-        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (dimension.width - fenster.getWidth()) / 2 + (getWidth() * 3) / 2;
-        int y = (dimension.height - fenster.getHeight()) / 2;
+    public void fensterZentrieren(JFrame fenster, Point location) {
+        int x = location.x + (getWidth() * 2);
+        int y = location.y;
         fenster.setLocation(x, y);
+
     }
 
     @Override
