@@ -9,7 +9,7 @@ TODO:
     - Cost im EdgeEditor implementieren, damit dies bei bereits vorhandenen Kanten angezeigt wird
     - Bei Multigraphen, Kanten leicht nach rechts krümmen (Vom Ausgangspunkt)
     - Im EdgeEditor instant bidirekte Kanten einfügen können
-    - Wenn EdgeEditor nicht mir auf den Bildschirm passt, komplett auf den nächsten schieben
+    //- Wenn EdgeEditor nicht mir auf den Bildschirm passt, komplett auf den nächsten schieben
  */
 public class Main extends JFrame implements KeyListener, MouseListener, ActionListener, EdgeEditorListener {
 

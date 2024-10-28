@@ -58,6 +58,7 @@ public class EdgeEditor extends JFrame implements ActionListener {
             tf.setText("Cost");
             tf.setForeground(Color.GRAY);
             tf.setFont(new Font("Serif",Font.BOLD,12));
+            tf.setPreferredSize(new Dimension(50, 20));
             tf.addFocusListener(new FocusListener() {
                 @Override
                 public void focusGained(FocusEvent e) {
@@ -113,21 +114,31 @@ public class EdgeEditor extends JFrame implements ActionListener {
             checkBox.setSelected(false);
         }
 
+        for (JTextField tfield : tfArray){
+          tfield.setText("Cost");
+        }
+
         // Alle Edges durchlaufen und prüfen, ob sie mit dem ausgewählten Node verbunden sind
-        for (Edge edge : edges) {
-            if (String.valueOf(edge.getStartNode().getValue()).equals(selectedNodeValue)) {
-                for (JCheckBox jcb : cbArray) {
-                    if (jcb.getText().equals(String.valueOf(edge.getEndNode().getValue()))) {
-                        jcb.setSelected(true);
-                    }
-                }
+        for (int i = 0; i < edges.size(); i++) {
+          if (String.valueOf(edges.get(i).getStartNode().getValue()).equals(selectedNodeValue)) {
+            for (int j = 0; j < cbArray.size(); j++) {
+              if (cbArray.get(j).getText().equals(String.valueOf(edges.get(i).getEndNode().getValue()))) {
+                cbArray.get(j).setSelected(true);
+                tfArray.get(j).setText(String.valueOf(edges.get(i).getCost()));
+              }
             }
+          }
         }
     }
 
     public void fensterZentrieren(JFrame fenster, Point location) {
         int x = location.x + (getWidth() * 2);
         int y = location.y;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        double width = screenSize.getWidth();
+        if (x + getWidth() > width){
+          x = location.x - getWidth();
+        }
         fenster.setLocation(x, y);
 
     }
