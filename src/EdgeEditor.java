@@ -11,6 +11,7 @@ public class EdgeEditor extends JFrame implements ActionListener {
     private ArrayList<JCheckBox> cbArray;
     private ArrayList<JTextField> tfArray;
     private JComboBox<ComboItem> nodeChooser;
+    private ArrayList<JCheckBox> bidirektArray;
 
     public EdgeEditor(ArrayList<Node> nodes, ArrayList<Edge> edges, EdgeEditorListener listener, Point location) {
         setTitle("Edge Editor");
@@ -50,9 +51,11 @@ public class EdgeEditor extends JFrame implements ActionListener {
         gbc2.anchor = GridBagConstraints.WEST;  // Setzt die Checkboxen linksbündig
         cbArray = new ArrayList<>();
         tfArray = new ArrayList<>();
+        bidirektArray = new ArrayList<>();
 
         for (Node node : nodes) {
             JCheckBox cb = new JCheckBox(String.valueOf(node.getValue()));
+            JCheckBox bi = new JCheckBox("Bid.");
 
             JTextField tf = new JTextField();
             tf.setText("Cost");
@@ -75,13 +78,16 @@ public class EdgeEditor extends JFrame implements ActionListener {
                     }
                 }
             });
-            tfArray.add(tf);
 
+            bidirektArray.add(bi);
+            tfArray.add(tf);
             cbArray.add(cb);
-            panel2.add(cb, gbc2);
-            gbc2.gridx = 1;
-            panel2.add(tf, gbc2);
             gbc2.gridx = 0;
+            panel2.add(bi, gbc2);
+            gbc2.gridx = 1;
+            panel2.add(cb, gbc2);
+            gbc2.gridx = 2;
+            panel2.add(tf, gbc2);
             gbc2.gridy++;  // Erhöhe nur die Zeile, damit die Checkboxen untereinander angeordnet werden
         }
 
@@ -154,38 +160,32 @@ public class EdgeEditor extends JFrame implements ActionListener {
                 for (int i = 0; i < cbArray.size(); i++) {
                     JCheckBox cb = cbArray.get(i);
                     JTextField tf = tfArray.get(i);  // Das zugehörige Textfeld abrufen
+                    JCheckBox bi = bidirektArray.get(i);
 
                     Node targetNode = getNodeFromCheckbox(cb.getText());
                     if (targetNode != null) {
                         if (cb.isSelected()) {
-                            if (!edgeExists(selectedNode, targetNode)) {
-                                try {
-                                    int cost;
-                                    if (tf.getText().equals("Cost")){
-                                        cost = 1;
-                                    } else {
-                                        cost = Integer.parseInt(tf.getText());  // Textfeldwert als Kosten verwenden
-                                    }
-                                    newEdges.add(new Edge(selectedNode, targetNode, cost, edges));
-                                } catch (NumberFormatException ex) {
-                                    System.out.println("Ungültiger Kostenwert für Kante: " + ex.getMessage());
+                            try {
+                                int cost;
+                                if (tf.getText().equals("Cost")){
+                                    cost = 1;
+                                } else {
+                                    cost = Integer.parseInt(tf.getText());  // Textfeldwert als Kosten verwenden
                                 }
-                            } else {
-                                try {
-                                    int cost;
-                                    if (tf.getText().equals("Cost")){
-                                        cost = 1;
-                                    } else {
-                                        cost = Integer.parseInt(tf.getText());  // Textfeldwert als Kosten verwenden
-                                    }
-                                    removeEdgeIfExists(selectedNode, targetNode);
-                                    newEdges.add(new Edge(selectedNode, targetNode, cost, edges));
-                                } catch (NumberFormatException ex) {
-                                    System.out.println("Ungültiger Kostenwert für Kante: " + ex.getMessage());
+                                removeEdgeIfExists(selectedNode, targetNode);
+                                newEdges.add(new Edge(selectedNode, targetNode, cost, edges));
+                                if (bi.isSelected()) {
+                                  removeEdgeIfExists(targetNode, selectedNode);
+                                  newEdges.add(new Edge(targetNode, selectedNode, cost, edges));
                                 }
+                            } catch (NumberFormatException ex) {
+                                  System.out.println("Ungültiger Kostenwert für Kante: " + ex.getMessage());
                             }
                         } else {
                             removeEdgeIfExists(selectedNode, targetNode);
+                            if (bi.isSelected()) {
+                                removeEdgeIfExists(targetNode, selectedNode);
+                            }
                         }
                     }
                 }
