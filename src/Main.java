@@ -6,10 +6,11 @@ import java.util.*;
 
 /*
 TODO:
-    - Cost im EdgeEditor implementieren, damit dies bei bereits vorhandenen Kanten angezeigt wird
-    - Bei Multigraphen, Kanten leicht nach rechts krümmen (Vom Ausgangspunkt)
+    (DONE) - Cost im EdgeEditor implementieren, damit dies bei bereits vorhandenen Kanten angezeigt wird
+    (DONE) - Bei Multigraphen, Kanten leicht nach rechts krümmen (Vom Ausgangspunkt)
     - Im EdgeEditor instant bidirekte Kanten einfügen können
-    //- Wenn EdgeEditor nicht mir auf den Bildschirm passt, komplett auf den nächsten schieben
+    (DONE) - Cost der Kanten in die Entsprechende Linie zeichen, statt wie jetzt beide nach oben
+    (DONE) - Wenn EdgeEditor nicht mir auf den Bildschirm passt, komplett auf den nächsten schieben
  */
 public class Main extends JFrame implements KeyListener, MouseListener, ActionListener, EdgeEditorListener {
 
@@ -41,7 +42,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         addKeyListener(this);
         nodes.add(new Node(10, 10, getFreeValue()));
         nodes.add(new Node(100, 100, getFreeValue()));
-        edges.add(new Edge(nodes.get(0), nodes.get(1), 1));
+        edges.add(new Edge(nodes.get(0), nodes.get(1), 1, edges));
 
         panel1 = new JPanel() {
             @Override
@@ -84,7 +85,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                             selectedNode = clickedNode;
                         } else {
                             // Erstelle eine Kante, wenn bereits eine Node ausgewählt ist
-                            edges.add(new Edge(selectedNode, clickedNode, 1));
+                            edges.add(new Edge(selectedNode, clickedNode, 1, edges));
                             selectedNode = null;
                             repaint();
                         }
@@ -371,8 +372,8 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                         }
 
                         // Überprüfen, ob die Kante bereits vorhanden ist
-                        if (!edges.contains(new Edge(node1, node2, 1))) {
-                            edges.add(new Edge(node1, node2, 1));
+                        if (!edges.contains(new Edge(node1, node2, 1, edges))) {
+                            edges.add(new Edge(node1, node2, 1, edges));
                         }
                     }
                     repaint();
@@ -477,7 +478,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             anzahlNodes = -1;
             nodes.add(new Node(10, 10, getFreeValue()));
             nodes.add(new Node(100, 100, getFreeValue()));
-            edges.add(new Edge(nodes.get(0), nodes.get(1), 1));
+            edges.add(new Edge(nodes.get(0), nodes.get(1), 1, edges));
             repaint();
         }
         if (actionCommand.equals("import")){
