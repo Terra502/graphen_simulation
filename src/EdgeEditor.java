@@ -122,6 +122,7 @@ public class EdgeEditor extends JFrame implements ActionListener {
 
         for (JTextField tfield : tfArray){
           tfield.setText("Cost");
+          tfield.setForeground(Color.GRAY);
         }
 
         // Alle Edges durchlaufen und prüfen, ob sie mit dem ausgewählten Node verbunden sind
@@ -131,6 +132,7 @@ public class EdgeEditor extends JFrame implements ActionListener {
                     if (cbArray.get(j).getText().equals(String.valueOf(edge.getEndNode().getValue()))) {
                         cbArray.get(j).setSelected(true);
                         tfArray.get(j).setText(String.valueOf(edge.getCost()));
+                        tfArray.get(j).setForeground(Color.BLACK);
                     }
                 }
             }
@@ -186,6 +188,9 @@ public class EdgeEditor extends JFrame implements ActionListener {
                             if (bi.isSelected()) {
                                 removeEdgeIfExists(targetNode, selectedNode);
                             }
+                            bi.setSelected(false);
+                            tf.setText("Cost");
+                            tf.setForeground(Color.GRAY);
                         }
                     }
                 }

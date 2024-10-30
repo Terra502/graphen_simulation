@@ -6,12 +6,7 @@ import java.util.*;
 
 /*
 TODO:
-    (DONE) - Cost im EdgeEditor implementieren, damit dies bei bereits vorhandenen Kanten angezeigt wird
-    (DONE) - Bei Multigraphen, Kanten leicht nach rechts krümmen (Vom Ausgangspunkt)
-    (DONE) - Im EdgeEditor instant bidirekte Kanten einfügen / löschen können 
-    (DONE) - Cost der Kanten in die Entsprechende Linie zeichen, statt wie jetzt beide nach oben
-    (DONE) - Wenn EdgeEditor nicht mir auf den Bildschirm passt, komplett auf den nächsten schieben
-    - Beim löschen der Kosten wird die Schriftfarbe nicht angepasst
+  - Flächen erkennen, Anzahl berechnen und evt. farbig markieren
  */
 public class Main extends JFrame implements KeyListener, MouseListener, ActionListener, EdgeEditorListener {
 
