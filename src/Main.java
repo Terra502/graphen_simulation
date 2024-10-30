@@ -6,7 +6,8 @@ import java.util.*;
 
 /*
 TODO:
-  - Flächen erkennen, Anzahl berechnen und evt. farbig markieren
+  - Menü einbauen, damit man zwischen schlichten und bidirektionalen Graphen gewechselt werden kann
+    - Flächen erkennen, Anzahl berechnen und evt. farbig markieren (https://github.com/maxbogue/PlanarityTester/)
  */
 public class Main extends JFrame implements KeyListener, MouseListener, ActionListener, EdgeEditorListener {
 
@@ -18,7 +19,6 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
     private int anzahlNodes = -1;
     private boolean doDrawCost = false;
 
-
     JLabel xPos;
     JLabel yPos;
     JLabel grad;
@@ -27,6 +27,10 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
     JComboBox<ComboItem> from;
     JComboBox<ComboItem> to;
     JCheckBox drawCost;
+
+    JMenuBar menuBar;
+    JMenu menu;
+    JMenuItem normalMode, advancedMode;
 
     public Main(){
         setTitle("Graphen Menü");
@@ -141,6 +145,24 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         grad = new JLabel("<html><h2 style=\"text-align:center; border: solid\">Grad:</h2></html>");
         distanz = new JLabel("<html><h2 style=\"text-align:center; border: solid\">Distanz:</h2></html>");
         durchmesser = new JLabel("<html><h2 style=\"text-align:center; border: solid\">Durchm.:</h2></html>");
+
+        menuBar = new JMenuBar();
+        menu = new JMenu("Modus");
+
+        normalMode = new JMenuItem("Normaler Modus");
+        advancedMode = new JMenuItem("Erweiterter Modus");
+
+        normalMode.addActionListener(this);
+        normalMode.setActionCommand("normal");
+        advancedMode.addActionListener(this);
+        advancedMode.setActionCommand("advanced");
+
+        menu.add(normalMode);
+        menu.add(advancedMode);
+
+        menuBar.add(menu);
+        setJMenuBar(menuBar);
+
 
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.BOTH;
@@ -491,6 +513,12 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         }
         if (actionCommand.equals("export")){
             exportData();
+        }
+        if (actionCommand.equals("normal")){
+          System.out.println("normal");
+        }
+        if (actionCommand.equals("advanced")) {
+          System.out.println("advanced");
         }
     }
 
