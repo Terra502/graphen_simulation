@@ -11,7 +11,7 @@ public class Dijkstra {
     private Map<Node, Node> predecessor;  // Speichert den Vorgänger eines jeden Knotens
 
 
-    public Dijkstra(List<Node> nodes, List<Edge> edges, Node startNode) {
+    public Dijkstra(List<Node> nodes, List<Edge> edges, Node startNode, boolean isNormalMode) {
         this.adjList = new HashMap<>();
         this.settled = new HashSet<>();
         this.pq = new PriorityQueue<>(Comparator.comparingInt(NodeDistance::getDistance));
@@ -26,6 +26,10 @@ public class Dijkstra {
         // Füge alle Kanten der Adjazenzliste hinzu
         for (Edge edge : edges) {
             adjList.get(edge.getStartNode()).add(edge);
+            // Im Normalmodus die Rückkante zur Adjazenzliste hinzufügen
+            if (isNormalMode) {
+                adjList.get(edge.getEndNode()).add(new Edge(edge.getEndNode(), edge.getStartNode(), edge.getCost(), (ArrayList<Edge>) edges));
+            }
         }
         // Setze den Startknoten
         dist.put(startNode, 0);  // Startknoten hat Distanz 0
@@ -65,8 +69,9 @@ public class Dijkstra {
         }
     }
 
-    public void highlightShortestPath(Node targetNode) {
+    public ArrayList<Edge> highlightShortestPath(Node targetNode) {
         Node currentNode = targetNode;
+        ArrayList<Edge> hEdges = new ArrayList<>();
         while (predecessor.containsKey(currentNode)) {
             Node prevNode = predecessor.get(currentNode);
             // Finde die Kante zwischen currentNode und prevNode
@@ -74,11 +79,16 @@ public class Dijkstra {
                 if ((edge.getStartNode() == prevNode && edge.getEndNode() == currentNode) ||
                         (edge.getStartNode() == currentNode && edge.getEndNode() == prevNode)) {
                     edge.setColor(Color.RED);  // Setzt die Kantenfarbe auf Rot
+                    hEdges.add(new Edge(edge.getStartNode(), edge.getEndNode(),1, hEdges));
                     break;
                 }
             }
             // Setze currentNode auf den Vorgänger, um den Pfad zurückzuverfolgen
             currentNode = prevNode;
         }
+        for (Edge edge : hEdges) {
+            edge.setColor(Color.RED);
+        }
+        return hEdges;
     }
 }

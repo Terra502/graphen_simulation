@@ -32,7 +32,7 @@ public class Edge {
         this.color = color;
     }
 
-    public void drawEdge(Graphics g) {
+    public void drawEdge(Graphics g, boolean drawNormalMode) {
         g.setColor(color);
         Graphics2D g2 = (Graphics2D) g;
 
@@ -41,44 +41,48 @@ public class Edge {
         int endX = endNode.getX();
         int endY = endNode.getY();
 
-        if (startNode != endNode) {
-            // Berechne den Kontrollpunkt für die Krümmung nach rechts
-            int controlX = (startX + endX) / 2 + (endY - startY) / 10; // Kontrollpunkt leicht verschoben
-            int controlY = (startY + endY) / 2 - (endX - startX) / 10;
-            double angle;
-
-            if (uniqueEdge(startNode, endNode)) {
-                g2.drawLine(startX, startY, endX, endY);
-                // Berechne den Winkel der Linie
-                angle = Math.atan2(endY - startY, endX - startX);
-            } else {
-                // Erstelle den gekrümmten Pfad als Quadratische Kurve
-                QuadCurve2D curve = new QuadCurve2D.Float();
-                curve.setCurve(startX, startY, controlX, controlY, endX, endY);
-                g2.draw(curve);
-                // Berechne den Winkel der Tangente am Endpunkt für den Pfeilkopf
-                angle = Math.atan2(endY - controlY, endX - controlX);
-            }
-
-
-            // Länge des Pfeilkopfes
-            int arrowLength = 10;
-
-            // Berechne die Punkte für die Pfeilspitzen
-            int x1 = endX - (int) (arrowLength * Math.cos(angle - Math.PI / 6));
-            int y1 = endY - (int) (arrowLength * Math.sin(angle - Math.PI / 6));
-            int x2 = endX - (int) (arrowLength * Math.cos(angle + Math.PI / 6));
-            int y2 = endY - (int) (arrowLength * Math.sin(angle + Math.PI / 6));
-
-            // Zeichne den Pfeilkopf
-            Polygon arrowHead = new Polygon();
-            arrowHead.addPoint(endX, endY);
-            arrowHead.addPoint(x1, y1);
-            arrowHead.addPoint(x2, y2);
-            g2.fill(arrowHead);
+        if (drawNormalMode){
+            g2.drawLine(startX, startY, endX, endY);
         } else {
-            // Selbstverbundene Kante als Oval
-            g.drawOval(startX - 2, startY, 5, 15);
+            if (startNode != endNode) {
+                // Berechne den Kontrollpunkt für die Krümmung nach rechts
+                int controlX = (startX + endX) / 2 + (endY - startY) / 10; // Kontrollpunkt leicht verschoben
+                int controlY = (startY + endY) / 2 - (endX - startX) / 10;
+                double angle;
+
+                if (uniqueEdge(startNode, endNode)) {
+                    g2.drawLine(startX, startY, endX, endY);
+                    // Berechne den Winkel der Linie
+                    angle = Math.atan2(endY - startY, endX - startX);
+                } else {
+                    // Erstelle den gekrümmten Pfad als Quadratische Kurve
+                    QuadCurve2D curve = new QuadCurve2D.Float();
+                    curve.setCurve(startX, startY, controlX, controlY, endX, endY);
+                    g2.draw(curve);
+                    // Berechne den Winkel der Tangente am Endpunkt für den Pfeilkopf
+                    angle = Math.atan2(endY - controlY, endX - controlX);
+                }
+
+
+                // Länge des Pfeilkopfes
+                int arrowLength = 10;
+
+                // Berechne die Punkte für die Pfeilspitzen
+                int x1 = endX - (int) (arrowLength * Math.cos(angle - Math.PI / 6));
+                int y1 = endY - (int) (arrowLength * Math.sin(angle - Math.PI / 6));
+                int x2 = endX - (int) (arrowLength * Math.cos(angle + Math.PI / 6));
+                int y2 = endY - (int) (arrowLength * Math.sin(angle + Math.PI / 6));
+
+                // Zeichne den Pfeilkopf
+                Polygon arrowHead = new Polygon();
+                arrowHead.addPoint(endX, endY);
+                arrowHead.addPoint(x1, y1);
+                arrowHead.addPoint(x2, y2);
+                g2.fill(arrowHead);
+            } else {
+                // Selbstverbundene Kante als Oval
+                g.drawOval(startX - 2, startY, 5, 15);
+            }
         }
     }
 

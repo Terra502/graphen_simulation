@@ -6,18 +6,21 @@ import java.util.*;
 
 /*
 TODO:
-  - Menü einbauen, damit man zwischen schlichten und bidirektionalen Graphen gewechselt werden kann
-    - Flächen erkennen, Anzahl berechnen und evt. farbig markieren (https://github.com/maxbogue/PlanarityTester/)
- */
+    (DONE)- Menü einbauen, damit man zwischen schlichten und bidirektionalen Graphen gewechselt werden kann
+            - Flächen erkennen, Anzahl berechnen und evt. farbig markieren (https://github.com/maxbogue/PlanarityTester/)
+    (DONE)- Bidirektionales Entfernen von Kanten
+*/
 public class Main extends JFrame implements KeyListener, MouseListener, ActionListener, EdgeEditorListener {
 
     private final JPanel panel1;
     private Node selectedNode = null;
     private ArrayList<Node> nodes = new ArrayList<>();
     private ArrayList<Edge> edges = new ArrayList<>();
+    private ArrayList<Edge> hEdges = new ArrayList<>();
     private final int MAX_NODES = 25;
     private int anzahlNodes = -1;
     private boolean doDrawCost = false;
+    private boolean drawNormalMode = true;
 
     JLabel xPos;
     JLabel yPos;
@@ -49,8 +52,14 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             protected void paintComponent(Graphics g){
                 super.paintComponent(g);
                 updateToFrom();
-                for (Edge edge: edges) {
-                    edge.drawEdge(g);
+                if (!(hEdges.size() > 0 && drawNormalMode)) {
+                    for (Edge edge: edges) {
+                        edge.drawEdge(g, drawNormalMode);
+                    }
+                } else {
+                    for (Edge edge : hEdges){
+                        edge.drawEdge(g, drawNormalMode);
+                    }
                 }
                 for (Node node: nodes) {
                     node.drawNode(g);
@@ -273,7 +282,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                 destNode = node;
             }
         }
-        Dijkstra dijkstra = new Dijkstra(nodes, edges, startNode);
+        Dijkstra dijkstra = new Dijkstra(nodes, edges, startNode, drawNormalMode);
         Map<Node, Integer> shortestPaths = dijkstra.findShortestPaths();
         int distanceToTarget = shortestPaths.get(destNode);
         if (distanceToTarget == 2147483647){
@@ -281,8 +290,8 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         } else {
             distanz.setText("<html><h2 style=\"text-align:center; border: solid\">Distanz: " + distanceToTarget + "</h2></html>");
         }
-        dijkstra.highlightShortestPath(destNode);
-        repaint();
+        hEdges = dijkstra.highlightShortestPath(destNode);
+        //repaint();
     }
 
     public void exportData() {
@@ -431,7 +440,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         int max = 0;
         for (Node startNode : nodes) {
             for (Node destNode : nodes) {
-                Dijkstra dijkstra = new Dijkstra(nodes, edges, startNode);
+                Dijkstra dijkstra = new Dijkstra(nodes, edges, startNode, drawNormalMode);
                 Map<Node, Integer> shortestPaths = dijkstra.findShortestPaths();
                 int distanceToTarget = shortestPaths.get(destNode);
                 if (distanceToTarget != 2147483647 && distanceToTarget > max){
@@ -515,12 +524,22 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             exportData();
         }
         if (actionCommand.equals("normal")){
-          System.out.println("normal");
+          drawNormalMode = true;
+          for (Edge edge : edges){
+              edge.setColor(Color.BLACK);
+          }
+          repaint();
         }
         if (actionCommand.equals("advanced")) {
-          System.out.println("advanced");
+          drawNormalMode = false;
+            for (Edge edge : edges){
+                edge.setColor(Color.BLACK);
+            }
+          repaint();
         }
     }
+
+
 
 
     @Override

@@ -186,7 +186,12 @@ public class EdgeEditor extends JFrame implements ActionListener {
                         } else {
                             removeEdgeIfExists(selectedNode, targetNode);
                             if (bi.isSelected()) {
-                                removeEdgeIfExists(targetNode, selectedNode);
+                                if (edgeExists(selectedNode, targetNode)) {
+                                    removeEdgeIfExists(targetNode, selectedNode);
+                                } else {
+                                    newEdges.add(new Edge(selectedNode, targetNode, 1, edges));
+                                    newEdges.add(new Edge(targetNode, selectedNode, 1, edges));
+                                }
                             }
                             bi.setSelected(false);
                             tf.setText("Cost");
