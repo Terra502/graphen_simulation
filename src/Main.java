@@ -33,7 +33,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
 
     JMenuBar menuBar;
     JMenu menu;
-    JMenuItem normalMode, advancedMode;
+    JMenuItem normalMode, advancedMode, binary;
 
     public Main(){
         setTitle("Graphen Menü");
@@ -43,8 +43,8 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
         setResizable(false);
         fensterZentrieren(this);
         addKeyListener(this);
-        nodes.add(new Node(10, 10, getFreeValue()));
-        nodes.add(new Node(100, 100, getFreeValue()));
+        nodes.add(new Node(10, 10, String.valueOf(getFreeValue())));
+        nodes.add(new Node(100, 100, String.valueOf(getFreeValue())));
         edges.add(new Edge(nodes.get(0), nodes.get(1), 1, edges));
 
         panel1 = new JPanel() {
@@ -79,7 +79,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                 if (SwingUtilities.isRightMouseButton(e)) {
                     // Erstelle neuen Knoten bei Rechtsklick
                     if (anzahlNodes < MAX_NODES) {
-                        Node node = new Node(e.getX(), e.getY(), getFreeValue());
+                        Node node = new Node(e.getX(), e.getY(), String.valueOf(getFreeValue()));
                         nodes.add(node);
                         updateUI(node);
                         repaint();
@@ -160,14 +160,18 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
 
         normalMode = new JMenuItem("Normaler Modus");
         advancedMode = new JMenuItem("Erweiterter Modus");
+        binary = new JMenuItem("Binary Tree");
 
         normalMode.addActionListener(this);
         normalMode.setActionCommand("normal");
         advancedMode.addActionListener(this);
         advancedMode.setActionCommand("advanced");
+        binary.addActionListener(this);
+        binary.setActionCommand("binary");
 
         menu.add(normalMode);
         menu.add(advancedMode);
+        menu.add(binary);
 
         menuBar.add(menu);
         setJMenuBar(menuBar);
@@ -390,10 +394,10 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                         Node node1 = null;
                         Node node2 = null;
                         for (Node node : nodes) {
-                            if (node.getValue() == edge.charAt(0)) {
+                            if (node.getValue().equals(String.valueOf(edge.charAt(0)))) {
                                 node1 = node;
                             }
-                            if (node.getValue() == edge.charAt(2)) {
+                            if (node.getValue().equals(String.valueOf(edge.charAt(2)))) {
                                 node2 = node;
                             }
                         }
@@ -409,7 +413,7 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                     line = line.substring(1, line.length() - 1); // Entfernt das erste und letzte Zeichen
                     String[] newNodes = line.split(",");
                     for (String node : newNodes){
-                        this.nodes.add(new Node(x,y, node.charAt(0)));
+                        this.nodes.add(new Node(x,y, String.valueOf(node.charAt(0))));
                         anzahlNodes++;
                         x += 50;
                         if (x > panel1.getWidth() - 100){
@@ -503,8 +507,8 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
             nodes.clear();
             edges.clear();
             anzahlNodes = -1;
-            nodes.add(new Node(10, 10, getFreeValue()));
-            nodes.add(new Node(100, 100, getFreeValue()));
+            nodes.add(new Node(10, 10, String.valueOf(getFreeValue())));
+            nodes.add(new Node(100, 100, String.valueOf(getFreeValue())));
             edges.add(new Edge(nodes.get(0), nodes.get(1), 1, edges));
             repaint();
         }
@@ -536,6 +540,16 @@ public class Main extends JFrame implements KeyListener, MouseListener, ActionLi
                 edge.setColor(Color.BLACK);
             }
           repaint();
+        }
+        if (actionCommand.equals("binary")){
+            setVisible(false);
+            BinaryGUI binaryGUI = new BinaryGUI();
+            binaryGUI.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent windowEvent) {
+                    setVisible(true);
+                }
+            });
         }
     }
 

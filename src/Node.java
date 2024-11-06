@@ -6,10 +6,13 @@ import java.util.Objects;
 
 public class Node {
     private int x,y;
-    private char value;
+    private String value;
     private static final int DURCHMESSER = 10;
+    private Node parentNode;
+    private Node leftChild;
+    private  Node rightChild;
 
-    public Node(int x, int y, char value){
+    public Node(int x, int y, String value){
         this.x = x;
         this.y = y;
         this.value = value;
@@ -32,9 +35,11 @@ public class Node {
         this.y = y;
     }
 
-    public char getValue() {
+    public String getValue() {
         return value;
     }
+
+
 
     public void drawNode(Graphics g){
         g.setColor(Color.BLACK);
@@ -53,10 +58,6 @@ public class Node {
     @Override
     public int hashCode() {
         return Objects.hash(value);
-    }
-
-    public int getIndex() {
-        return value - 'a';  // Example: for 'a', returns 0, for 'b', returns 1
     }
 
     public int getCost(Node neighbor) {
