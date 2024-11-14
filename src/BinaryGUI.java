@@ -1,5 +1,3 @@
-import com.sun.source.tree.Tree;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -93,6 +91,8 @@ public class BinaryGUI extends JFrame implements ActionListener {
     importButton.setActionCommand("import");
     addField.addActionListener(this);
     addField.setActionCommand("addNode");
+    deleteField.addActionListener(this);
+    deleteField.setActionCommand("deleteNode");
 
     gbc.gridy = 0;
     gbc.gridx = 0;
@@ -153,7 +153,7 @@ public class BinaryGUI extends JFrame implements ActionListener {
     // Berechne Position für linkes und rechtes Kind
     int horizontalGap = 50;  // Horizontaler Abstand zwischen den Nodes
     int verticalGap = 50;  // Vertikaler Abstand für die Tiefe
-                            // Zeichne linkes Kind
+                           // Zeichne linkes Kind
     if (node.getLeftChild() != null) {
       g.drawLine(centerX, centerY + height / 2, x - horizontalGap, y + verticalGap + height / 2);
       drawNodes(g, node.getLeftChild(), x - horizontalGap, y + verticalGap, level + 1);
@@ -174,8 +174,45 @@ public class BinaryGUI extends JFrame implements ActionListener {
     fenster.setLocation(x, y);
   }
 
+  public void deleteNode(String value) {
+    root = deleteNode(root, value); // Startet die rekursive Löschung ab der Wurzel
+  }
+
+  private TreeNode deleteNode(TreeNode node, String value) {
+    if (node == null) return null;
+
+    // Knoten finden
+    if (Integer.parseInt(value) < Integer.parseInt(node.getValue())) {
+      node.setLeftChild(deleteNode(node.getLeftChild(), value));
+    } else if (Integer.parseInt(value) > Integer.parseInt(node.getValue())) {
+      node.setRightChild(deleteNode(node.getRightChild(), value));
+    } else {
+      // Knoten mit einem Kind oder keinem Kind
+      if (node.getLeftChild() == null) {
+        return node.getRightChild();
+      } else if (node.getRightChild() == null) {
+        return node.getLeftChild();
+      }
+
+      // Knoten mit zwei Kindern: Nachfolger finden
+      TreeNode successor = findMin(node.getRightChild());
+      node.setValue(successor.getValue()); // Wert des Nachfolgers kopieren
+      node.setRightChild(deleteNode(node.getRightChild(), successor.getValue()));
+    }
+    return node;
+  }
+
+  private TreeNode findMin(TreeNode node) {
+    while (node.getLeftChild() != null) {
+      node = node.getLeftChild();
+    }
+    return node;
+  }
   public void addNode(){
     String valueToAdd = addField.getText();
+    if (valueToAdd.equals("")) {
+      return;
+    }
     if (root == null) {
       root = new TreeNode(valueToAdd); // Erstelle den Wurzelknoten, falls der Baum leer ist
     } else {
@@ -235,7 +272,9 @@ public class BinaryGUI extends JFrame implements ActionListener {
       repaint();
     }
     if (actionCommand.equals("deleteNode")){
-
+      deleteNode(deleteField.getText());
+      repaint();
+      deleteField.setText("");
     }
     if (actionCommand.equals("export")){
 
